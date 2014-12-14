@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <context:component-scan base-package="com.nj.search" />
+
+    <bean id="bindyDataformat" class="org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat">
+        <constructor-arg value="org.apache.camel.bindy.model" />
+    </bean>
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Vehicles.*.csv" />
+                <split streaming="true">
+                    <tokenize token="\n" group="1000"/>
+                        <unmarshal ref="bindyDataformat">
+                            <bindy type="Csv"  classType="com.nj.search.vehicle.Vehicle" />
+                        </unmarshal>
+                        <to uri="bean:csvDataStore?method=addVehicle" />
+                        <!--<to uri="bean:csvDataStore?method=purgeDoneVehicles"/>-->
+                        <delay>
+                            <constant>75</constant>
+                        </delay>
+                </split>
+        </route>
+
+        <route>
+            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Casualties.*.csv" />
+            <split streaming="true">
+                <tokenize token="\n" group="1000"/>
+                <unmarshal ref="bindyDataformat">
+                    <bindy type="Csv"  classType="com.nj.search.casualty.Casualty" />
+                </unmarshal>
+                <to uri="bean:csvDataStore?method=addCasualty" />
+                <!--<to uri="bean:csvDataStore?method=purgeDoneCasualties"/>-->
+                <delay>
+                    <constant>75</constant>
+                </delay>
+            </split>
+        </route>
+
+        <route>
+            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Accidents.*.csv" />
+            <split streaming="true">
+                <tokenize token="\n" group="1000"/>
+                <unmarshal ref="bindyDataformat">
+                    <bindy type="Csv"  classType="com.nj.search.accident.Accident" />
+                </unmarshal>
+                <to uri="bean:csvDataStore?method=addAccident" />
+                <to uri="bean:csvDataStore?method=combineAndPurge"/>
+                <!--<to uri="bean:csvDataStore?method=purgeDoneAccidents"/>-->
+                <delay>
+                    <constant>75</constant>
+                </delay>
+            </split>
+        </route>
+
+        <route>
+            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=MakeModel.*.csv" />
+            <split streaming="true">
+                <tokenize token="\n" group="1000"/>
+                <unmarshal ref="bindyDataformat">
+                    <bindy type="Csv"  classType="com.nj.search.makemodel.MakeModel" />
+                </unmarshal>
+                <to uri="bean:csvDataStore?method=addMakeModel" />
+                <!--<to uri="bean:csvDataStore?method=purgeDoneMakeModels"/>-->
+                <delay>
+                    <constant>75</constant>
+                </delay>
+            </split>
+        </route>
+
+            <!--<route>-->
+                <!--<from uri="timer://foo?fixedRate=true&amp;period=1000"/>-->
+                <!--<to uri="bean:csvDataStore?method=combineAndPurge"/>-->
+            <!--</route>-->
+
+        <route>
+            <from uri="timer://foo?fixedRate=true&amp;period=1000"/>
+            <to uri="bean:metrics?method=report"/>
+        </route>
+
+    </camelContext>
+</beans>

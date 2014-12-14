@@ -1,0 +1,298 @@
+---
+Day_Of_Week:
+  '1': Mon
+  '2': Tue
+  '3': Wed
+  '4': Thu
+  '5': Fri
+  '6': Sat
+  '7': Sun
+BREATH_TEST:
+  '0': Not applicable
+  '1': Positive
+  '2': Negative
+  '3': Not requested
+  '4': Refused to provide
+  '5': Driver not contacted at time of col
+  '6': Not provided (medical reasons)
+Bus_or_Coach_Passenger:
+  '0': Not a bus or coach passenger
+  '1': Boarding
+  '2': Alighting
+  '3': Standing passenger
+  '4': Seated passenger
+CYCLE_HELMET:
+  '0': Not a cyclist
+  '1': Yes
+  '2': No
+  '3': Not known
+Car_Passenger:
+  '0': Not a car passenger
+  '1': Front seat passenger
+  '2': Rear seat passenger
+Carriageway_Hazards:
+  '0': None
+  '1': Dislodged vehicle load in carriageway
+  '2': Other object in carriageway
+  '3': Involvement with previous accident
+  '6': Pedestrian in carriageway - not injured
+  '7': Any animal in carriageway (except ridden horse)
+Casualty_Class:
+  '1': Driver/Rider
+  '2': Veh./pillion Passenger
+  '3': Pedestrian
+Casualty_Severity:
+  '1': Fatal
+  '2': Serious
+  '3': Slight
+Did_Police_Officer_Attend_Scene_of_Accident:
+  '1': Yes
+  '2': No
+Driver_Home_Area_Type:
+  '1': Unknown
+  '2': Non UK Resident
+  '3': Parked & unattended
+First_Point_of_Impact:
+  '0': Did not impact
+  '1': Front
+  '2': Back
+  '3': Offside
+  '4': Nearside
+HIT_AND_RUN:
+  '0': Not hit and run
+  '1': Hit and run
+  '2': Non-stop vehicle, not hit
+Hit_Object_in_Carriageway:
+  '00': None
+  '01': Previous accident
+  '02': Roadworks
+  '04': Parked vehicle
+  '05': Bridge - roof
+  '06': Bridge - side
+  '07': Bollard / Refuge
+  '08': Open door of vehicle
+  '09': Central island of roundabout
+  '10': Kerb
+  '11': Other object
+  '12': Any animal (except ridden horse)
+Hit_Object_off_Carriageway:
+  '00': None
+  '01': Road sign / Traffic signal
+  '02': Lamp post
+  '03': Telegraph pole / Electricity pole
+  '04': Tree
+  '05': Bus stop / Bus shelter
+  '06': Central crash barrier
+  '07': Nearside or offside crash barrier
+  '08': Submerged in water (completely)
+  '09': Entered ditch
+  '10': Other permanent object
+  '11': Wall or fence
+Journey_Purpose_of_Driver:
+  '1': Journey as part of work
+  '2': Commuting to / from work
+  '3': Taking school pupil to/from school
+  '4': Pupil riding to / from school
+  '5': Other
+  '6': Not known
+Junction_Control:
+  '1': Authorised person
+  '2': Automatic traffic signal
+  '4': Give way or uncontrolled
+Junction_Detail:
+  '00': Not at or within 20 metres of junction
+  '01': Roundabout
+  '02': Mini roundabout
+  '03': T or staggered junction
+  '05': Slip road
+  '06': Crossroads
+  '07': Junction more than four arms (not RAB)
+  '08': Using private drive or entrance
+  '09': Other junction
+Junction_Location:
+  '0': Not at or within 20m of junction
+  '1': Approaching junction or waiting/parked at junction approach
+  '2': Cleared junction or waiting/parked at junction exit
+  '3': Leaving roundabout
+  '4': Entering roundabout
+  '5': Leaving main road
+  '6': Entering main road
+  '7': Entering from slip road
+  '8': Mid junction– on roundabout or on main road
+Light_Conditions:
+  '1': Daylight
+  '4': Darkness street lights present and lit
+  '5': Darkness street lights present but unlit
+  '6': Darkness no street lighting
+  '7': Darkness street lighting unknown
+PEDESTRIAN_DIRECTION:
+  '0': Standing still
+  '1': Northbound
+  '2': Northeast bound
+  '3': Eastbound
+  '4': Southeast bound
+  '5': Southbound
+  '6': Southwest bound
+  '7': Westbound
+  '8': Northwest bound
+  '9': Unknown
+Pedestrian_Crossing_Human_Control:
+  '0': None within 50 metres
+  '1': Control by school crossing patrol
+  '2': Control by other authorised person
+Pedestrian_Crossing_Physical_Facilities:
+  '0': No physical crossing facility within 50m
+  '1': Zebra crossing
+  '4': Pelican, puffin, toucan or similar non junction pedestrian light crossing
+  '5': Pedestrian phase at traffic signal junction
+  '7': Footbridge or subway
+  '8': Central refuge — no other controls
+Pedestrian_Location:
+  '01': In carriageway, crossing on pedestrian crossing facility
+  '02': In carriageway, crossing within zig-zag lines at crossing approach
+  '03': In carriageway, crossing within zig-zag lines at crossing exit
+  '04': In carriageway, crossing elsewhere within 50m of pedestrian crossing
+  '05': In carriageway crossing elsewhere
+  '06': On footway or verge
+  '07': On refuge, central island or central reservation
+  '08': In centre of carriageway not on refuge, island or central reservation
+  '09': In carriageway, not crossing
+  '10': Unknown or other
+Pedestrian_Movement:
+  '1': Crossing from driver’s nearside
+  '2': Crossing from driver’s nearside-masked by parked or stationary veh
+  '3': Crossing from driver’s offside
+  '4': Crossing from driver’s offside-masked by parked or stationary veh
+  '5': In carriageway, stationary - not crossing (standing or playing)
+  '6': In carriageway, stationary -not crossing (standing or playing), masked by parked
+    or stationary veh
+  '7': Walking along in carriageway-facing traffic
+  '8': Walking along in carriageway-back to traffic
+  '9': Unknown or other
+Pedestrian_Road_Maintenance_Worker:
+  '0': No / not applicable
+  '1': Yes
+  '2': Not known
+Road_Surface_Conditions:
+  '1': Dry
+  '2': Wet / Damp
+  '3': Snow
+  '4': Frost / Ice
+  '5': Flood (surface water over 3cm deep)
+Road_Type:
+  '1': Roundabout
+  '2': One way street
+  '3': Dual carriageway
+  '6': Single carriageway
+  '7': Slip road
+  '9': Unknown
+SEAT_BELT_IN_USE:
+  '0': Not applicable
+  '1': Worn and independently confirmed
+  '2': Worn but not independently confirmed
+  '3': Not worn
+  '4': Unknown
+Sex_of_Casualty:
+  '1': Male
+  '2': Female
+Sex_of_Driver:
+  '1': Male
+  '2': Female
+  '3': Not known
+Skidding_and_Overturning:
+  '0': No skidding, jack-knifing or overturning
+  '1': Skidded
+  '2': Skidded and overturned
+  '3': Jack - knifed
+  '4': Jack - knifed and overturned
+  '5': Overturned
+Special_Conditions_at_Site:
+  '0': None
+  '1': Auto traffic signal out
+  '2': Auto traffic signal partially defective
+  '3': Permanent road signing or marking defective or obscured
+  '4': Roadworks
+  '5': Road surface defective
+  '6': Oil or diesel
+  '7': Mud
+Towing_and_Articulation:
+  '0': No tow or articulation
+  '1': Articulated vehicle
+  '2': Double or multiple trailer
+  '3': Caravan
+  '4': Single trailer
+  '5': Other tow
+Vehicle_Leaving_Carriageway:
+  '0': Did not leave carriageway
+  '1': Left carriageway nearside
+  '2': Left carriageway nearside and rebounded
+  '3': Left carriageway straight ahead at junction
+  '4': Left carriageway offside onto central reservation
+  '5': Left carriageway offside onto central reserve and rebounded
+  '6': Left carriageway offside and crossed central reservation
+  '7': Left carriageway offside
+  '8': Left carriageway offside and rebounded
+Vehicle_Location_Restricted_Lane:
+  '00': On main carriageway not in restricted lane
+  '01': Tram / Light rail track
+  '02': Bus lane
+  '03': Busway (inc. guided busway)
+  '04': Cycle lane (on main carriageway)
+  '05': Cycleway or shared use footway (not part of main carriageway)
+  '06': On lay-by / hard shoulder
+  '07': Entering lay-by/ hard shoulder
+  '08': Leaving lay-by / hard shoulder
+  '09': Footway (pavement)
+Vehicle_Manoeuvre:
+  '01': Reversing
+  '02': Parked
+  '03': Waiting to go ahead but held up
+  '04': Slowing or stopping
+  '05': Moving off
+  '06': U turn
+  '07': Turning left
+  '08': Waiting to turn left
+  '09': Turning right
+  '10': Waiting to turn right
+  '11': Changing lane to left
+  '12': Changing lane to right
+  '13': O’taking moving veh on its offside
+  '14': O’taking stationary veh on its offside
+  '15': Overtaking on nearside
+  '16': Going ahead left hand bend
+  '17': Going ahead right hand bend
+  '18': Going ahead other
+Vehicle_Type:
+  '01': Pedal cycle
+  '02': M/cycle 50cc and under
+  '03': M/cycle over 50cc and up to 125cc
+  '04': M/cycle over 125cc and up to 500cc
+  '05': Motorcycle over 500cc
+  '08': Taxi / Private hire car
+  '09': Car
+  '10': Minibus (8-16 passenger seats)
+  '11': Bus or coach (17 or more passenger seats)
+  '16': Ridden horse
+  '17': Agricultural vehicle (include diggers etc)
+  '18': Tram / Light rail
+  '19': Van - Goods vehicle 3.5 tonnes mgw and under
+  '20': Goods vehicle over 3.5 tonnes mgw and under 7.5 tonnes mgw
+  '21': Goods vehicle 7.5 tonnes mgw & over
+  '22': Mobility scooter
+  '23': Electric Motorcycle
+  '90': Other vehicle
+  '97': Motorcycle - cc unknown
+  '98': Goods vehicle - unknown weight
+Was_Vehicle_Left_Hand_Drive:
+  '1': No
+  '2': Yes
+Weather_Conditions:
+  '1': Fine without high winds
+  '2': Raining without high winds
+  '3': Snowing without high winds
+  '4': Fine with high winds
+  '5': Raining with high winds
+  '6': Snowing with high winds
+  '7': Fog or mist — if hazard
+  '8': Other
+  '9': Unknown
