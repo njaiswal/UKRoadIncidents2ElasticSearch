@@ -10,10 +10,11 @@ import java.io.FileNotFoundException;
 
 public class RefDataMgrTest {
 
+    private RefDataMgr refData;
 
     @BeforeClass
     public void oneTimeSetUp() throws Exception {
-        RefDataMgr.loadReferenceData();
+        refData =  RefDataMgr.getInstance();
     }
 
     @DataProvider(name = "refData", parallel = true)
@@ -35,11 +36,11 @@ public class RefDataMgrTest {
         String actual = null;
 
         if(k1.equals("Road_Type")) {
-            actual = RefDataMgr.data().getRoad_Type().get(k2);
+            actual = refData.data().getRoad_Type().get(k2);
         } else if(k1.equals("Junction_Control")) {
-            actual = RefDataMgr.data().getJunction_Control().get(k2);
+            actual = refData.data().getJunction_Control().get(k2);
         } else if(k1.equals("Weather_Conditions")){
-            actual = RefDataMgr.data().getWeather_Conditions().get(k2);
+            actual = refData.data().getWeather_Conditions().get(k2);
         } else {
             Assert.fail("Test did not correctly identify key:" + k1);
         }

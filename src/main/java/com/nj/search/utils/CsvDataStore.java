@@ -7,13 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nj.search.accident.Accident;
 import com.nj.search.casualty.Casualty;
 import com.nj.search.makemodel.MakeModel;
+import com.nj.search.mapping.RefDataMgr;
 import com.nj.search.vehicle.Vehicle;
 import org.apache.camel.Exchange;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -88,13 +91,16 @@ public class CsvDataStore {
         }
     }
 
-    public void addAccident(Exchange ex){
+    public void addAccident(Exchange ex) throws FileNotFoundException {
 
         ArrayList<Accident> aList = (ArrayList<Accident>) ex.getIn().getBody(List.class);
 
         for(Accident a : aList) {
-            accidents.put(a.getAccident_Index(), a);
-            //accidentIdList.add(a.getAccident_Index());
+            //Skip if it looks like first line of csv file, i.e. the header
+            if (a.getDay_of_Week().matches("^\\d$")) {
+                a.enrichData();
+                accidents.put(a.getAccident_Index(), a);
+            }
         }
     }
 

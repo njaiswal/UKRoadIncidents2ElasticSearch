@@ -5,7 +5,9 @@ import com.nj.search.mapping.RefDataMgr;
 import com.nj.search.vehicle.Vehicle;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.FileNotFoundException;
 import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +115,6 @@ public class Accident {
 
     private List<Vehicle> vehicleList = new ArrayList<Vehicle>();
     private List<Casualty> casualtyList = new ArrayList<Casualty>();
-
 
     public List<Vehicle> getVehicleList() {
         return vehicleList;
@@ -403,20 +404,21 @@ public class Accident {
         DateTime = dateTime;
     }
 
-    public void enrichData(){
+    public void enrichData() throws FileNotFoundException {
+        RefDataMgr refDataMgr = RefDataMgr.getInstance();
         this.DateTime = this.Date + " " + this.Time;
-        this.Day_of_Week = RefDataMgr.data().getDay_Of_Week().get(this.Day_of_Week);
-        this.Road_Type = RefDataMgr.data().getRoad_Type().get(this.Road_Type);
-        this.Junction_Detail = RefDataMgr.data().getJunction_Detail().get(this.Junction_Detail);
-        this.Junction_Control = RefDataMgr.data().getJunction_Control().get(this.Junction_Control);
-        this.Pedestrian_Crossing_Human_Control = RefDataMgr.data().getPedestrian_Crossing_Human_Control().get(this.Pedestrian_Crossing_Human_Control);
-        this.Pedestrian_Crossing_Physical_Facilities = RefDataMgr.data().getPedestrian_Crossing_Physical_Facilities().get(this.Pedestrian_Crossing_Physical_Facilities);
-        this.Light_Conditions = RefDataMgr.data().getLight_Conditions().get(this.Light_Conditions);
-        this.Weather_Conditions = RefDataMgr.data().getWeather_Conditions().get(this.Weather_Conditions);
-        this.Road_Surface_Conditions = RefDataMgr.data().getRoad_Surface_Conditions().get(this.Road_Surface_Conditions);
-        this.Special_Conditions_at_Site = RefDataMgr.data().getSpecial_Conditions_at_Site().get(this.Special_Conditions_at_Site);
-        this.Carriageway_Hazards = RefDataMgr.data().getCarriageway_Hazards().get(this.Carriageway_Hazards);
-        this.Did_Police_Officer_Attend_Scene_of_Accident = RefDataMgr.data().getDid_Police_Officer_Attend_Scene_of_Accident().get(this.Did_Police_Officer_Attend_Scene_of_Accident);
+        this.Day_of_Week = refDataMgr.data().getDay_Of_Week().get(this.Day_of_Week);
+        this.Road_Type = refDataMgr.data().getRoad_Type().get(this.Road_Type);
+        this.Junction_Detail = refDataMgr.data().getJunction_Detail().get(this.Junction_Detail);
+        this.Junction_Control = refDataMgr.data().getJunction_Control().get(this.Junction_Control);
+        this.Pedestrian_Crossing_Human_Control = refDataMgr.data().getPedestrian_Crossing_Human_Control().get(this.Pedestrian_Crossing_Human_Control);
+        this.Pedestrian_Crossing_Physical_Facilities = refDataMgr.data().getPedestrian_Crossing_Physical_Facilities().get(this.Pedestrian_Crossing_Physical_Facilities);
+        this.Light_Conditions = refDataMgr.data().getLight_Conditions().get(this.Light_Conditions);
+        this.Weather_Conditions = refDataMgr.data().getWeather_Conditions().get(this.Weather_Conditions);
+        this.Road_Surface_Conditions = refDataMgr.data().getRoad_Surface_Conditions().get(this.Road_Surface_Conditions);
+        this.Special_Conditions_at_Site = refDataMgr.data().getSpecial_Conditions_at_Site().get(this.Special_Conditions_at_Site);
+        this.Carriageway_Hazards = refDataMgr.data().getCarriageway_Hazards().get(this.Carriageway_Hazards);
+        this.Did_Police_Officer_Attend_Scene_of_Accident = refDataMgr.data().getDid_Police_Officer_Attend_Scene_of_Accident().get(this.Did_Police_Officer_Attend_Scene_of_Accident);
 
     }
 
