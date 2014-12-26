@@ -1,11 +1,17 @@
 package com.nj.search.vehicle;
 
 
+import com.nj.search.mapping.RefDataMgr;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@CsvRecord(separator = ",", skipFirstLine=true)
+import java.io.FileNotFoundException;
+
+@CsvRecord(separator = ",")
 public class Vehicle {
+    private Logger logger = LoggerFactory.getLogger(Vehicle.class);
 
     @DataField(pos = 1)
     private String Acc_Index;
@@ -70,6 +76,9 @@ public class Vehicle {
     @DataField(pos = 21)
     private String Driver_Home_Area_Type;
 
+    @DataField(pos = 22)
+    private String DataType;
+
     public String getMake() {
         return make;
     }
@@ -85,9 +94,6 @@ public class Vehicle {
     public void setModel(String model) {
         this.model = model;
     }
-
-    @DataField(pos = 22)
-    private String Data_type;
 
     private String make;
 
@@ -262,14 +268,29 @@ public class Vehicle {
         Driver_Home_Area_Type = driver_Home_Area_Type;
     }
 
-    public String getData_type() {
-        return Data_type;
-    }
+    public void enrichData() throws FileNotFoundException {
+        RefDataMgr refDataMgr = RefDataMgr.getInstance();
 
-    public void setData_type(String data_type) {
-        Data_type = data_type;
+        try {
+            this.Vehicle_Type = refDataMgr.data().Vehicle_Type.get(Integer.parseInt(this.Vehicle_Type));
+            this.Towing_and_Articulation = refDataMgr.data().Towing_and_Articulation.get(Integer.parseInt(this.Towing_and_Articulation));
+            this.Vehicle_Manoeuvre = refDataMgr.data().Vehicle_Manoeuvre.get(Integer.parseInt(this.Vehicle_Manoeuvre));
+            this.Vehicle_Location_Restricted_Lane = refDataMgr.data().Vehicle_Location_Restricted_Lane.get(Integer.parseInt(this.Vehicle_Location_Restricted_Lane));
+            this.Junction_Location = refDataMgr.data().Junction_Location.get(Integer.parseInt(this.Junction_Location));
+            this.Skidding_and_Overturning = refDataMgr.data().Skidding_and_Overturning.get(Integer.parseInt(this.Skidding_and_Overturning));
+            this.Hit_Object_in_Carriageway = refDataMgr.data().Hit_Object_in_Carriageway.get(Integer.parseInt(this.Hit_Object_in_Carriageway));
+            this.Hit_Object_off_Carriageway = refDataMgr.data().Hit_Object_off_Carriageway.get(Integer.parseInt(this.Hit_Object_off_Carriageway));
+            this.Vehicle_Leaving_Carriageway = refDataMgr.data().Vehicle_Leaving_Carriageway.get(Integer.parseInt(this.Vehicle_Leaving_Carriageway));
+            this.First_Point_of_Impact = refDataMgr.data().First_Point_of_Impact.get(Integer.parseInt(this.First_Point_of_Impact));
+            this.Was_Vehicle_Left_Hand_Drive = refDataMgr.data().Was_Vehicle_Left_Hand_Drive.get(Integer.parseInt(this.Was_Vehicle_Left_Hand_Drive));
+            this.Journey_Purpose_of_Driver = refDataMgr.data().Journey_Purpose_of_Driver.get(Integer.parseInt(this.Journey_Purpose_of_Driver));
+            this.Sex_of_Driver = refDataMgr.data().Sex_of_Driver.get(Integer.parseInt(this.Sex_of_Driver));
+            this.Driver_Home_Area_Type = refDataMgr.data().Driver_Home_Area_Type.get(Integer.parseInt(this.Driver_Home_Area_Type));
+        } catch (Exception e){
+            logger.error("Exception parsing:{}", this.toString());
+            logger.error(e.getMessage());
+        }
     }
-
 
     @Override
     public String toString() {
@@ -295,7 +316,6 @@ public class Vehicle {
                 ", Age_of_Vehicle='" + Age_of_Vehicle + '\'' +
                 ", Driver_IMD_Decile='" + Driver_IMD_Decile + '\'' +
                 ", Driver_Home_Area_Type='" + Driver_Home_Area_Type + '\'' +
-                ", Data_type='" + Data_type + '\'' +
                 ", make='" + make + '\'' +
                 ", model='" + model + '\'' +
                 '}';

@@ -17,7 +17,13 @@ public class Metrics {
 
 
     public void report(){
-        logger.info("Accidents List: {}, Accidents:{}, Casualities:{}, Vehicles: {}, MakeModel:{}, Accidents Full:{}, Accidents Completed:{}",
+        logger.info("Accidents List: {}, " +
+                        "Accidents:{}, " +
+                        "Casualities:{}, " +
+                        "Vehicles: {}, " +
+                        "MakeModel:{}, " +
+                        "Accidents Full:{}, " +
+                        "Accidents Completed:{}",
                 dataStore.getAccidentIdList().size(),
                 dataStore.getAccidents().size(),
                 dataStore.getCasualties().size(),

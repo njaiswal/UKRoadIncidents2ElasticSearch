@@ -28,34 +28,37 @@ public class CsvDataStore {
 
     private Logger logger = LoggerFactory.getLogger(CsvDataStore.class);
 
-    private volatile Map<String, Accident> accidents = new ConcurrentHashMap<String, Accident>();
+    private volatile Map<String, Accident> accidents = new ConcurrentHashMap<String, Accident>(10000, new Float(0.75), 120);
     private volatile List<Accident> accidentsFullData = new ArrayList<Accident>();
-    private volatile Map<String, List<Casualty>> casualties = new ConcurrentHashMap<String, List<Casualty>>();
-    private volatile Map<String, List<Vehicle>> vehicles = new ConcurrentHashMap<String, List<Vehicle>>();
-    private volatile Map<String, List<MakeModel>> makemodels = new ConcurrentHashMap<String, List<MakeModel>>();
+    private volatile Map<String, List<Casualty>> casualties = new ConcurrentHashMap<String, List<Casualty>>(10000, new Float(0.75), 120);
+    private volatile Map<String, List<Vehicle>> vehicles = new ConcurrentHashMap<String, List<Vehicle>>(10000, new Float(0.75), 120);
+    private volatile Map<String, List<MakeModel>> makemodels = new ConcurrentHashMap<String, List<MakeModel>>(10000, new Float(0.75), 120);
 
 
     private volatile List<String> accidentIdList = new ArrayList<String>();
-    private volatile Map<String, Integer> accidentIdCompletedList = new ConcurrentHashMap<String, Integer>();
+    private volatile Map<String, Integer> accidentIdCompletedList = new ConcurrentHashMap<String, Integer>(10000, new Float(0.75), 120);
 
     private ObjectMapper mapper = new ObjectMapper();
 
 
-    public void addVehicle(Exchange ex) {
+    public void addVehicle(Exchange ex) throws FileNotFoundException {
 
-        ArrayList<Vehicle> vList = (ArrayList<Vehicle>) ex.getIn().getBody(List.class);
+        Vehicle v = ex.getIn().getBody(Vehicle.class);
 
-        for (Vehicle v : vList) {
-            String accidentId = v.getAcc_Index();
+            if (v.getAge_of_Vehicle().matches("^-?\\d+$")) {
+                v.enrichData();
+                String accidentId = v.getAcc_Index();
 
-            if (!vehicles.containsKey(accidentId)) {
-                List<Vehicle> arr = new ArrayList<Vehicle>();
-                arr.add(v);
-                vehicles.put(accidentId, arr);
+                if (!vehicles.containsKey(accidentId)) {
+                    List<Vehicle> arr = new ArrayList<Vehicle>();
+                    arr.add(v);
+                    vehicles.put(accidentId, arr);
+                } else {
+                    vehicles.get(accidentId).add(v);
+                }
             } else {
-                vehicles.get(accidentId).add(v);
+                // Skipp header line of csv file
             }
-        }
     }
 
     public void purgeDoneVehicles(Exchange ex){
@@ -66,21 +69,24 @@ public class CsvDataStore {
         }
     }
 
-    public void addCasualty(Exchange ex){
+    public void addCasualty(Exchange ex) throws FileNotFoundException {
 
-        ArrayList<Casualty> cList = (ArrayList<Casualty>) ex.getIn().getBody(List.class);
+        Casualty c = ex.getIn().getBody(Casualty.class);
 
-        for(Casualty c : cList) {
-            String accidentId = c.getAcc_Index();
+            if(c.getSex_of_Casualty().matches("^-?\\d+$")) {
+                c.enrichData();
+                String accidentId = c.getAcc_Index();
 
-            if (!casualties.containsKey(accidentId)) {
-                List<Casualty> arr = new ArrayList<Casualty>();
-                arr.add(c);
-                casualties.put(accidentId, arr);
+                if (!casualties.containsKey(accidentId)) {
+                    List<Casualty> arr = new ArrayList<Casualty>();
+                    arr.add(c);
+                    casualties.put(accidentId, arr);
+                } else {
+                    casualties.get(accidentId).add(c);
+                }
             } else {
-                casualties.get(accidentId).add(c);
+                // skipp first header line of csv file
             }
-        }
     }
 
     public void purgeDoneCasualties(Exchange ex) {
@@ -93,15 +99,13 @@ public class CsvDataStore {
 
     public void addAccident(Exchange ex) throws FileNotFoundException {
 
-        ArrayList<Accident> aList = (ArrayList<Accident>) ex.getIn().getBody(List.class);
+        Accident a = ex.getIn().getBody(Accident.class);
 
-        for(Accident a : aList) {
             //Skip if it looks like first line of csv file, i.e. the header
-            if (a.getDay_of_Week().matches("^\\d$")) {
+            if (a.getDay_of_Week().matches("^-?\\d$")) {
                 a.enrichData();
                 accidents.put(a.getAccident_Index(), a);
             }
-        }
     }
 
     public void purgeDoneAccidents(Exchange ex) {
@@ -114,9 +118,8 @@ public class CsvDataStore {
 
     public void addMakeModel(Exchange ex){
 
-        ArrayList<MakeModel> mList = (ArrayList<MakeModel>) ex.getIn().getBody(List.class);
+        MakeModel m = ex.getIn().getBody(MakeModel.class);
 
-        for(MakeModel m : mList) {
             String accidentId = m.getAcc_Index();
 
             if (!makemodels.containsKey(accidentId)) {
@@ -126,7 +129,6 @@ public class CsvDataStore {
             } else {
                 makemodels.get(accidentId).add(m);
             }
-        }
     }
 
     public void purgeDoneMakeModels(Exchange ex) {
@@ -154,7 +156,7 @@ public class CsvDataStore {
 //                continue;
 //            }
 
-                if(casualties.containsKey(accidentId) && vehicles.containsKey(accidentId))
+                if(vehicles.containsKey(accidentId) && casualties.containsKey(accidentId))
                 {
                     logger.info("Combining Accident Id: {}", accidentId);
 
@@ -164,9 +166,9 @@ public class CsvDataStore {
                     if(casualties.get(accidentId).size() == a.getNumber_of_Casualties() &&
                             vehicles.get(accidentId).size() == a.getNumber_of_Vehicles()) {
                     boolean infoComplete = false;
-                    if(accidentId.matches("^20(10|11|12|13)") && makemodels.get(accidentId).size() == a.getNumber_of_Vehicles()){
+                    if(accidentId.matches("^20(10|11|12|13).*$") && makemodels.get(accidentId).size() == a.getNumber_of_Vehicles()){
                         infoComplete = true;
-                    } else if (! accidentId.matches("^20(10|11|12|13)")) {
+                    } else if (! accidentId.matches("^20(10|11|12|13).*$")) {
                         infoComplete = true;
                     }
 
@@ -176,7 +178,7 @@ public class CsvDataStore {
                         a.getCasualtyList().addAll(casualties.remove(accidentId));
 
                         //Enrich vehicle data with make model if present
-                        if(accidentId.matches("^20(10|11|12|13)")) {
+                        if(accidentId.matches("^20(10|11|12|13).*$")) {
                             for (Vehicle v : vehicles.get(accidentId)) {
                                 for (MakeModel m : makemodels.get(accidentId)) {
                                     if (v.getVehicle_Reference().equals(m.getVehicle_Reference())) {
@@ -218,6 +220,7 @@ public class CsvDataStore {
                             casualties.get(accidentId).size(), a.getNumber_of_Casualties(),
                                     vehicles.get(accidentId).size(), a.getNumber_of_Vehicles()
                             );
+                        //logger.warn("accidentID:{} missing some vehicles or casualities. Skipping combining for next time", accidentId);
                 }
             } else {
                     logger.warn("WARN casualties or vehicles do not contain accidentId:{}", accidentId);

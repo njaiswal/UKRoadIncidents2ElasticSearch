@@ -31,7 +31,7 @@ public class RefDataMgrTest {
 
         String [] kk = k.split("\\.");
         String k1 = kk[0];
-        String k2 = kk[1];
+        Integer k2 = Integer.parseInt(kk[1]);
 
         String actual = null;
 

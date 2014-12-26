@@ -8,75 +8,119 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-2.5.xsd
        http://camel.apache.org/schema/spring
-       http://camel.apache.org/schema/spring/camel-spring.xsd">
+           http://camel.apache.org/schema/spring/camel-spring-2.14.0.xsd">
 
     <context:component-scan base-package="com.nj.search" />
+
+    <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+        <property name="location" value="classpath:${env}.properties"/>
+    </bean>
 
     <bean id="bindyDataformat" class="org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat">
         <constructor-arg value="org.apache.camel.bindy.model" />
     </bean>
 
+    <bean id="exceptionProcessor" class="com.nj.search.processor.ExceptionProcessor"/>
+    <bean id="aggregatorStrategy" class="com.nj.search.processor.ArrayListAggregationStrategy"/>
+
+
+
     <camelContext xmlns="http://camel.apache.org/schema/spring">
+
         <route>
-            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Vehicles.*.csv" />
-                <split streaming="true">
-                    <tokenize token="\n" group="1000"/>
+            <from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=sorted.*.csv" />
+            <split streaming="true">
+                <tokenize token="\r\n" group="1"/>
+                <choice>
+                    <when>
+                        <simple>${body} regex &#39;.*,Vehicle$&#39;</simple>
                         <unmarshal ref="bindyDataformat">
                             <bindy type="Csv"  classType="com.nj.search.vehicle.Vehicle" />
                         </unmarshal>
                         <to uri="bean:csvDataStore?method=addVehicle" />
-                        <!--<to uri="bean:csvDataStore?method=purgeDoneVehicles"/>-->
-                        <delay>
-                            <constant>75</constant>
-                        </delay>
-                </split>
-        </route>
-
-        <route>
-            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Casualties.*.csv" />
-            <split streaming="true">
-                <tokenize token="\n" group="1000"/>
-                <unmarshal ref="bindyDataformat">
-                    <bindy type="Csv"  classType="com.nj.search.casualty.Casualty" />
-                </unmarshal>
-                <to uri="bean:csvDataStore?method=addCasualty" />
-                <!--<to uri="bean:csvDataStore?method=purgeDoneCasualties"/>-->
-                <delay>
-                    <constant>75</constant>
-                </delay>
+                    </when>
+                    <when>
+                        <simple>${body} regex &#39;.*,Casualty$&#39;</simple>
+                        <unmarshal ref="bindyDataformat">
+                            <bindy type="Csv"  classType="com.nj.search.casualty.Casualty" />
+                        </unmarshal>
+                        <to uri="bean:csvDataStore?method=addCasualty" />
+                    </when>
+                    <when>
+                        <simple>${body} regex &#39;.*,Accident$&#39;</simple>
+                        <unmarshal ref="bindyDataformat">
+                            <bindy type="Csv"  classType="com.nj.search.accident.Accident" />
+                        </unmarshal>
+                        <to uri="bean:csvDataStore?method=addAccident" />
+                    </when>
+                    <when>
+                        <simple>${body} regex &#39;.*,MakeModel$&#39;</simple>
+                        <unmarshal ref="bindyDataformat">
+                            <bindy type="Csv"  classType="com.nj.search.makemodel.MakeModel" />
+                        </unmarshal>
+                        <to uri="bean:csvDataStore?method=addMakeModel" />
+                    </when>
+                    <otherwise>
+                        <to uri="bean:exceptionProcessor"/>
+                        <to uri="mock:detour"/>
+                    </otherwise>
+                </choice>
+                <aggregate strategyRef="aggregatorStrategy" completionSize="1000" completionInterval="10000">
+                    <correlationExpression>
+                        <constant>1</constant>
+                    </correlationExpression>
+                    <to uri="bean:csvDataStore?method=combineAndPurge"/>
+                </aggregate>
             </split>
         </route>
 
-        <route>
-            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=Accidents.*.csv" />
-            <split streaming="true">
-                <tokenize token="\n" group="1000"/>
-                <unmarshal ref="bindyDataformat">
-                    <bindy type="Csv"  classType="com.nj.search.accident.Accident" />
-                </unmarshal>
-                <to uri="bean:csvDataStore?method=addAccident" />
-                <to uri="bean:csvDataStore?method=combineAndPurge"/>
-                <!--<to uri="bean:csvDataStore?method=purgeDoneAccidents"/>-->
-                <delay>
-                    <constant>75</constant>
-                </delay>
-            </split>
-        </route>
+        <!--<route>-->
+            <!--<from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=Vehicles.*.csv" />-->
+                <!--<split streaming="true">-->
+                    <!--<tokenize token="\n" group="3000"/>-->
+                        <!--<unmarshal ref="bindyDataformat">-->
+                            <!--<bindy type="Csv"  classType="com.nj.search.vehicle.Vehicle" />-->
+                        <!--</unmarshal>-->
+                        <!--<to uri="bean:csvDataStore?method=addVehicle" />-->
+                <!--</split>-->
+        <!--</route>-->
 
-        <route>
-            <from uri="file:/Users/nj/workspace/elasticsearch/data?delete=false&amp;consumer.delay=10000&amp;include=MakeModel.*.csv" />
-            <split streaming="true">
-                <tokenize token="\n" group="1000"/>
-                <unmarshal ref="bindyDataformat">
-                    <bindy type="Csv"  classType="com.nj.search.makemodel.MakeModel" />
-                </unmarshal>
-                <to uri="bean:csvDataStore?method=addMakeModel" />
-                <!--<to uri="bean:csvDataStore?method=purgeDoneMakeModels"/>-->
-                <delay>
-                    <constant>75</constant>
-                </delay>
-            </split>
-        </route>
+        <!--<route>-->
+            <!--<from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=Casualties.*.csv" />-->
+            <!--<split streaming="true">-->
+                <!--<tokenize token="\n" group="2000"/>-->
+                <!--<unmarshal ref="bindyDataformat">-->
+                    <!--<bindy type="Csv"  classType="com.nj.search.casualty.Casualty" />-->
+                <!--</unmarshal>-->
+                <!--<to uri="bean:csvDataStore?method=addCasualty" />-->
+            <!--</split>-->
+        <!--</route>-->
+
+        <!--<route>-->
+            <!--<from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=Accidents.*.csv" />-->
+            <!--<onCompletion>-->
+                <!--<to uri="bean:csvDataStore?method=combineAndPurge"/>-->
+            <!--</onCompletion>-->
+            <!--<split streaming="true">-->
+                <!--<tokenize token="\n" group="5000"/>-->
+                <!--<unmarshal ref="bindyDataformat">-->
+                    <!--<bindy type="Csv"  classType="com.nj.search.accident.Accident" />-->
+                <!--</unmarshal>-->
+                <!--<to uri="bean:csvDataStore?method=addAccident" />-->
+                <!--<to uri="bean:csvDataStore?method=combineAndPurge"/>-->
+            <!--</split>-->
+        <!--</route>-->
+
+        <!--<route>-->
+            <!--<from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=MakeModel.*.csv" />-->
+            <!--<split streaming="true">-->
+                <!--<tokenize token="\n" group="2000"/>-->
+                <!--<unmarshal ref="bindyDataformat">-->
+                    <!--<bindy type="Csv"  classType="com.nj.search.makemodel.MakeModel" />-->
+                <!--</unmarshal>-->
+                <!--<to uri="bean:csvDataStore?method=addMakeModel" />-->
+            <!--</split>-->
+        <!--</route>-->
 
             <!--<route>-->
                 <!--<from uri="timer://foo?fixedRate=true&amp;period=1000"/>-->
@@ -84,7 +128,7 @@
             <!--</route>-->
 
         <route>
-            <from uri="timer://foo?fixedRate=true&amp;period=1000"/>
+            <from uri="timer://foo?fixedRate=true&amp;period=5000"/>
             <to uri="bean:metrics?method=report"/>
         </route>
 

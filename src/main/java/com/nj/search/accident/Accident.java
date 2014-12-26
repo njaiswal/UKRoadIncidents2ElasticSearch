@@ -113,6 +113,9 @@ public class Accident {
     @DataField(pos = 32)
     private String LSOA_of_Accident_Location;
 
+    @DataField(pos = 33)
+    private String DataType;
+
     private List<Vehicle> vehicleList = new ArrayList<Vehicle>();
     private List<Casualty> casualtyList = new ArrayList<Casualty>();
 
@@ -407,19 +410,18 @@ public class Accident {
     public void enrichData() throws FileNotFoundException {
         RefDataMgr refDataMgr = RefDataMgr.getInstance();
         this.DateTime = this.Date + " " + this.Time;
-        this.Day_of_Week = refDataMgr.data().getDay_Of_Week().get(this.Day_of_Week);
-        this.Road_Type = refDataMgr.data().getRoad_Type().get(this.Road_Type);
-        this.Junction_Detail = refDataMgr.data().getJunction_Detail().get(this.Junction_Detail);
-        this.Junction_Control = refDataMgr.data().getJunction_Control().get(this.Junction_Control);
-        this.Pedestrian_Crossing_Human_Control = refDataMgr.data().getPedestrian_Crossing_Human_Control().get(this.Pedestrian_Crossing_Human_Control);
-        this.Pedestrian_Crossing_Physical_Facilities = refDataMgr.data().getPedestrian_Crossing_Physical_Facilities().get(this.Pedestrian_Crossing_Physical_Facilities);
-        this.Light_Conditions = refDataMgr.data().getLight_Conditions().get(this.Light_Conditions);
-        this.Weather_Conditions = refDataMgr.data().getWeather_Conditions().get(this.Weather_Conditions);
-        this.Road_Surface_Conditions = refDataMgr.data().getRoad_Surface_Conditions().get(this.Road_Surface_Conditions);
-        this.Special_Conditions_at_Site = refDataMgr.data().getSpecial_Conditions_at_Site().get(this.Special_Conditions_at_Site);
-        this.Carriageway_Hazards = refDataMgr.data().getCarriageway_Hazards().get(this.Carriageway_Hazards);
-        this.Did_Police_Officer_Attend_Scene_of_Accident = refDataMgr.data().getDid_Police_Officer_Attend_Scene_of_Accident().get(this.Did_Police_Officer_Attend_Scene_of_Accident);
-
+        this.Day_of_Week = refDataMgr.data().Day_Of_Week.get(Integer.parseInt(this.Day_of_Week));
+        this.Road_Type = refDataMgr.data().Road_Type.get(Integer.parseInt(this.Road_Type));
+        this.Junction_Detail = refDataMgr.data().Junction_Detail.get(Integer.parseInt(this.Junction_Detail));
+        this.Junction_Control = refDataMgr.data().Junction_Control.get(Integer.parseInt(this.Junction_Control));
+        this.Pedestrian_Crossing_Human_Control = refDataMgr.data().Pedestrian_Crossing_Human_Control.get(Integer.parseInt(this.Pedestrian_Crossing_Human_Control));
+        this.Pedestrian_Crossing_Physical_Facilities = refDataMgr.data().Pedestrian_Crossing_Physical_Facilities.get(Integer.parseInt(this.Pedestrian_Crossing_Physical_Facilities));
+        this.Light_Conditions = refDataMgr.data().Light_Conditions.get(Integer.parseInt(this.Light_Conditions));
+        this.Weather_Conditions = refDataMgr.data().Weather_Conditions.get(Integer.parseInt(this.Weather_Conditions));
+        this.Road_Surface_Conditions = refDataMgr.data().Road_Surface_Conditions.get(Integer.parseInt(this.Road_Surface_Conditions));
+        this.Special_Conditions_at_Site = refDataMgr.data().Special_Conditions_at_Site.get(Integer.parseInt(this.Special_Conditions_at_Site));
+        this.Carriageway_Hazards = refDataMgr.data().Carriageway_Hazards.get(Integer.parseInt(this.Carriageway_Hazards));
+        this.Did_Police_Officer_Attend_Scene_of_Accident = refDataMgr.data().Did_Police_Officer_Attend_Scene_of_Accident.get(Integer.parseInt(this.Did_Police_Officer_Attend_Scene_of_Accident));
     }
 
     @Override

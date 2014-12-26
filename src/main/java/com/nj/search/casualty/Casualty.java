@@ -1,11 +1,18 @@
 package com.nj.search.casualty;
 
 
+import com.nj.search.mapping.RefDataMgr;
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
 
 @CsvRecord(separator = ",")
 public class Casualty {
+
+    private Logger logger = LoggerFactory.getLogger(Casualty.class);
 
     @DataField(pos = 1)
     private String Acc_Index;
@@ -50,7 +57,7 @@ public class Casualty {
     private String Casualty_Home_Area_Type;
 
     @DataField(pos = 15)
-    private String Data_Type;
+    private String DataType;
 
     public String getAcc_Index() {
         return Acc_Index;
@@ -164,12 +171,22 @@ public class Casualty {
         Casualty_Home_Area_Type = casualty_Home_Area_Type;
     }
 
-    public String getData_Type() {
-        return Data_Type;
-    }
+    public void enrichData() throws FileNotFoundException {
+        RefDataMgr refDataMgr = RefDataMgr.getInstance();
+        try {
 
-    public void setData_Type(String data_Type) {
-        Data_Type = data_Type;
+            this.Casualty_Class = refDataMgr.data().Casualty_Class.get(Integer.parseInt(this.Casualty_Class));
+            this.Sex_of_Casualty = refDataMgr.data().Sex_of_Casualty.get(Integer.parseInt(this.Sex_of_Casualty));
+            this.Casualty_Severity = refDataMgr.data().Casualty_Severity.get(Integer.parseInt(this.Casualty_Severity));
+            this.Pedestrian_Location = refDataMgr.data().Pedestrian_Location.get(Integer.parseInt(this.Pedestrian_Location));
+            this.Pedestrian_Movement = refDataMgr.data().Pedestrian_Movement.get(Integer.parseInt(this.Pedestrian_Movement));
+            this.Car_Passenger = refDataMgr.data().Car_Passenger.get(Integer.parseInt(this.Car_Passenger));
+            this.Bus_or_Coach_Passenger = refDataMgr.data().Bus_or_Coach_Passenger.get(Integer.parseInt(this.Bus_or_Coach_Passenger));
+            this.Pedestrian_Road_Maintenance_Worker = refDataMgr.data().Pedestrian_Road_Maintenance_Worker.get(Integer.parseInt(this.Pedestrian_Road_Maintenance_Worker));
+        } catch (Exception e) {
+            logger.error("Exception parsing:{}", this.toString());
+            logger.error(e.getMessage());
+        }
     }
 
     @Override
@@ -189,7 +206,6 @@ public class Casualty {
                 ", Pedestrian_Road_Maintenance_Worker='" + Pedestrian_Road_Maintenance_Worker + '\'' +
                 ", Casualty_Type='" + Casualty_Type + '\'' +
                 ", Casualty_Home_Area_Type='" + Casualty_Home_Area_Type + '\'' +
-                ", Data_Type='" + Data_Type + '\'' +
                 '}';
     }
 }

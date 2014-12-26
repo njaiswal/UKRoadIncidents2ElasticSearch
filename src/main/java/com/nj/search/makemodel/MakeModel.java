@@ -79,6 +79,9 @@ public class MakeModel {
     @DataField(pos = 24, trim = true)
     private String model;
 
+    @DataField(pos = 25)
+    private String DataType;
+
     public String getAcc_Index() {
         return Acc_Index;
     }
