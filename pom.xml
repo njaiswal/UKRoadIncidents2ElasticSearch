@@ -21,12 +21,6 @@
             <version>${camel.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.apache.camel</groupId>-->
-            <!--<artifactId>camel-csv</artifactId>-->
-            <!--<version>${camel.version}</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring</artifactId>
@@ -86,6 +80,18 @@
             <artifactId>testng</artifactId>
             <version>6.8</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
         </dependency>
 
     </dependencies>

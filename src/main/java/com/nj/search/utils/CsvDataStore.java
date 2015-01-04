@@ -9,14 +9,24 @@ import com.nj.search.casualty.Casualty;
 import com.nj.search.makemodel.MakeModel;
 import com.nj.search.mapping.RefDataMgr;
 import com.nj.search.vehicle.Vehicle;
+import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.spring.SpringCamelContext;
+import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +50,40 @@ public class CsvDataStore {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+//    @Autowired
+//    private ApplicationContext appContext;
+//
+//    private SpringCamelContext springCamelContext;
+    private Map<String, Object> headers;
+
+    @Value("${es.indexName}")
+    private String defaultIndexName;
+
+    @Value("${es.type}")
+    private String defaultType;
+
+    @EndpointInject(uri="direct:bulkIndex")
+    ProducerTemplate esProducer;
+
+
+//    private ProducerTemplate getProducerTemplate(){
+//        if(this.springCamelContext == null){
+//            this.springCamelContext = appContext.getBean("camelContext", SpringCamelContext.class);
+//        }
+//
+//        return springCamelContext.createProducerTemplate();
+//    }
+
+    private Map<String, Object> getHeaders() throws IOException {
+        if(headers == null){
+            headers = new HashMap<String, Object>();
+            headers.put("ES.INDEX_NAME", defaultIndexName);
+            headers.put("ES.TYPE", defaultType);
+            headers.put("ES.INDEX_AND_TYPE", defaultIndexName + "_" + defaultType);
+        }
+
+        return headers;
+    }
 
     public void addVehicle(Exchange ex) throws FileNotFoundException {
 
@@ -141,7 +185,7 @@ public class CsvDataStore {
     }
 
     // This method will combine and purge only complete data sets from store
-    public void combineAndPurge() throws JsonProcessingException {
+    public void combineAndPurge() throws IOException {
         //logger.info("Trying to combine Accidents, Vehicle and Casualty records");
 
         //logger.warn("WARN accidentIdList size={}", accidentIdList.size());
@@ -158,7 +202,7 @@ public class CsvDataStore {
 
                 if(vehicles.containsKey(accidentId) && casualties.containsKey(accidentId))
                 {
-                    logger.info("Combining Accident Id: {}", accidentId);
+                    logger.debug("Combining Accident Id: {}", accidentId);
 
                     Accident a = accidents.get(accidentId);
 
@@ -166,19 +210,20 @@ public class CsvDataStore {
                     if(casualties.get(accidentId).size() == a.getNumber_of_Casualties() &&
                             vehicles.get(accidentId).size() == a.getNumber_of_Vehicles()) {
                     boolean infoComplete = false;
-                    if(accidentId.matches("^20(10|11|12|13).*$") && makemodels.get(accidentId).size() == a.getNumber_of_Vehicles()){
-                        infoComplete = true;
-                    } else if (! accidentId.matches("^20(10|11|12|13).*$")) {
-                        infoComplete = true;
-                    }
+//                    if(accidentId.matches("^20(10|11|12|13).*$") && makemodels.containsKey(accidentId) &&
+//                            makemodels.get(accidentId).size() == a.getNumber_of_Vehicles()){
+//                        infoComplete = true;
+//                    } else if (! accidentId.matches("^20(10|11|12|13).*$")) {
+//                        infoComplete = true;
+//                    }
 
-                    if (infoComplete) {
+//                    if (infoComplete) {
 
                         //Add Casualties and remove from memory
                         a.getCasualtyList().addAll(casualties.remove(accidentId));
 
                         //Enrich vehicle data with make model if present
-                        if(accidentId.matches("^20(10|11|12|13).*$")) {
+                        if(accidentId.matches("^20(10|11|12|13).*$") && makemodels.containsKey(accidentId)) {
                             for (Vehicle v : vehicles.get(accidentId)) {
                                 for (MakeModel m : makemodels.get(accidentId)) {
                                     if (v.getVehicle_Reference().equals(m.getVehicle_Reference())) {
@@ -203,16 +248,22 @@ public class CsvDataStore {
                         // Do something with this data, send to ES
                         //logger.info(a.toString());
 
-                        JsonNode json = mapper.valueToTree(a);
-                        logger.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+//                        JsonNode json = mapper.valueToTree(a);
+//                        logger.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
 
                         // Remove accident
-                        accidents.remove(accidentId);
-                        //accidentsFullData.add(accidents.remove(accidentId));
+                        //Map accidentDocument = new BeanMap(accidents.remove(accidentId));
+                        Map accidentDocument = mapper.convertValue(accidents.remove(accidentId), Map.class);
+                        esProducer.sendBodyAndHeaders("direct:bulkIndex",
+                                ExchangePattern.InOnly,
+                                accidentDocument,
+                                getHeaders());
 
                         //Record completion of this accidentId
                         accidentIdCompletedList.put(accidentId, 1);
-                    }
+//                    } else {
+//                        logger.warn("WARN accidentID:{} seems to be incomplete", accidentId);
+//                    }
                 } else {
                     logger.warn("WARN accidentID:{}. casualties.get(accidentId).size()={} NOTEQUAL a.getNumber_of_Casualties()={},\n" +
                                     " vehicles.get(accidentId).size()={} NOTEQUAL a.getNumber_of_Vehicles()={}",

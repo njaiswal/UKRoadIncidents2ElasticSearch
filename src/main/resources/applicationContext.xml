@@ -11,6 +11,7 @@
            http://camel.apache.org/schema/spring/camel-spring-2.14.0.xsd">
 
     <context:component-scan base-package="com.nj.search" />
+    <context:property-placeholder location="classpath:${env}.properties"/>
 
     <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
         <property name="location" value="classpath:${env}.properties"/>
@@ -20,41 +21,42 @@
         <constructor-arg value="org.apache.camel.bindy.model" />
     </bean>
 
-    <bean id="exceptionProcessor" class="com.nj.search.processor.ExceptionProcessor"/>
-    <bean id="aggregatorStrategy" class="com.nj.search.processor.ArrayListAggregationStrategy"/>
+    <bean id="elasticSearchEndPoint" class="com.nj.search.processor.ElasticSearchEndPoint">
+        <constructor-arg index="0" type="java.lang.String" value="${es.host}"/>
+        <constructor-arg index="1" type="int" value="${es.port}"/>
+    </bean>
 
 
-
-    <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <camelContext xmlns="http://camel.apache.org/schema/spring" id="camelContext">
 
         <route>
             <from uri="file:{{data.dir}}?delete=false&amp;consumer.delay=2000&amp;include=sorted.*.csv" />
             <split streaming="true">
-                <tokenize token="\r\n" group="1"/>
+                <tokenize token="\n" group="1"/>
                 <choice>
                     <when>
-                        <simple>${body} regex &#39;.*,Vehicle$&#39;</simple>
+                        <simple>${body} regex &#39;.*,Vehicle\r?$&#39;</simple>
                         <unmarshal ref="bindyDataformat">
                             <bindy type="Csv"  classType="com.nj.search.vehicle.Vehicle" />
                         </unmarshal>
                         <to uri="bean:csvDataStore?method=addVehicle" />
                     </when>
                     <when>
-                        <simple>${body} regex &#39;.*,Casualty$&#39;</simple>
+                        <simple>${body} regex &#39;.*,Casualty\r?$&#39;</simple>
                         <unmarshal ref="bindyDataformat">
                             <bindy type="Csv"  classType="com.nj.search.casualty.Casualty" />
                         </unmarshal>
                         <to uri="bean:csvDataStore?method=addCasualty" />
                     </when>
                     <when>
-                        <simple>${body} regex &#39;.*,Accident$&#39;</simple>
+                        <simple>${body} regex &#39;.*,Accident\r?$&#39;</simple>
                         <unmarshal ref="bindyDataformat">
                             <bindy type="Csv"  classType="com.nj.search.accident.Accident" />
                         </unmarshal>
                         <to uri="bean:csvDataStore?method=addAccident" />
                     </when>
                     <when>
-                        <simple>${body} regex &#39;.*,MakeModel$&#39;</simple>
+                        <simple>${body} regex &#39;.*,MakeModel\r?$&#39;</simple>
                         <unmarshal ref="bindyDataformat">
                             <bindy type="Csv"  classType="com.nj.search.makemodel.MakeModel" />
                         </unmarshal>
@@ -65,13 +67,32 @@
                         <to uri="mock:detour"/>
                     </otherwise>
                 </choice>
-                <aggregate strategyRef="aggregatorStrategy" completionSize="1000" completionInterval="10000">
+                <aggregate strategyRef="arrayListAggregationStrategy" completionSize="5000" completionInterval="10000">
                     <correlationExpression>
                         <constant>1</constant>
                     </correlationExpression>
                     <to uri="bean:csvDataStore?method=combineAndPurge"/>
                 </aggregate>
             </split>
+        </route>
+
+        <route>
+            <from uri="direct:bulkIndex"/>
+            <aggregate strategyRef="arrayListAggregationStrategy" completionSize="5000" completionInterval="10000">
+                <correlationExpression>
+                    <header>ES.INDEX_AND_TYPE</header>
+                </correlationExpression>
+                <to uri="bean:elasticSearchEndPoint?method=bulkIndex"/>
+            </aggregate>
+            <onException>
+                <exception>org.elasticsearch.transport.NodeNotConnectedException</exception>
+                <exception>org.elasticsearch.client.transport.NoNodeAvailableException</exception>
+                <redeliveryPolicy maximumRedeliveries="1" retryAttemptedLogLevel="ERROR"/>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <to uri="bean:nonDeliveriesProcessor"/>
+            </onException>
         </route>
 
         <!--<route>-->

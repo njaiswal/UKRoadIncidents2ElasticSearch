@@ -1,0 +1,56 @@
+{
+    "order": 0,
+    "template": "*",
+    "settings": {},
+    "mappings": {
+        "_default_": {
+            "dynamic": "true",
+            "dynamic_templates": [
+                {
+                    "string_not_analyzed": {
+                        "mapping": {
+                            "index": "not_analyzed"
+                        },
+                        "match": "*",
+                        "match_mapping_type": "string"
+                    }
+                },
+                {
+                    "geo_location_data":{
+                        "mapping":{
+                            "type": "geo_point"
+                        },
+                        "match": "accidentLocation"
+                    }
+                },
+                {
+                    "my_nested_mapping":{
+                        "mapping":{
+                            "type": "nested",
+                            "include_in_parent": true
+                        },
+                        "match": "*List"
+                    }
+                },
+                {
+                    "timestamp_hours_minutes": {
+                        "mapping": {
+                            "type": "date",
+                            "format": "dd/mm/yyyy HH:mm"
+                        },
+                        "match": "dateTime"
+                    }
+                }
+            ],
+            "_timestamp": {
+                "enabled": true,
+                "store": true,
+                "format": "yyyy-MM-dd HH:mm:ssZZ"
+            },
+            "date_detection": "false",
+            "_all": {
+                "enabled": true
+            }
+        }
+    }
+}

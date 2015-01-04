@@ -8,9 +8,12 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Ref;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CsvRecord(separator = ",")
 public class Accident {
@@ -29,6 +32,8 @@ public class Accident {
 
     @DataField(pos = 5)
     private String Latitude;
+
+    private BigDecimal[] accidentLocation;
 
     @DataField(pos = 6)
     private String Police_Force;
@@ -232,7 +237,11 @@ public class Accident {
     }
 
     public String getTime() {
-        return Time;
+        if(this.Time == null){
+            return "00:00";
+        } else {
+            return Time;
+        }
     }
 
     public void setTime(String time) {
@@ -407,9 +416,28 @@ public class Accident {
         DateTime = dateTime;
     }
 
+    public BigDecimal[] getAccidentLocation() {
+        return accidentLocation;
+    }
+
+    public void setAccidentLocation(BigDecimal[] accidentLocation) {
+        this.accidentLocation = accidentLocation;
+    }
+
     public void enrichData() throws FileNotFoundException {
         RefDataMgr refDataMgr = RefDataMgr.getInstance();
-        this.DateTime = this.Date + " " + this.Time;
+        this.DateTime = this.getDate() + " " + this.getTime();
+
+        if(this.getLatitude() != null || this.getLongitude() != null) {
+            this.accidentLocation = new BigDecimal[2];
+            this.accidentLocation[0] = new BigDecimal(this.getLongitude()).setScale(6);
+            this.accidentLocation[1] = new BigDecimal(this.getLatitude()).setScale(6);
+        } else {
+            this.accidentLocation = new BigDecimal[2];
+            this.accidentLocation[0] = new BigDecimal(0).setScale(6);
+            this.accidentLocation[1] = new BigDecimal(0).setScale(6);
+        }
+
         this.Day_of_Week = refDataMgr.data().Day_Of_Week.get(Integer.parseInt(this.Day_of_Week));
         this.Road_Type = refDataMgr.data().Road_Type.get(Integer.parseInt(this.Road_Type));
         this.Junction_Detail = refDataMgr.data().Junction_Detail.get(Integer.parseInt(this.Junction_Detail));

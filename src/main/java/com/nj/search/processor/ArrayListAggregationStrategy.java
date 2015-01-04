@@ -2,9 +2,11 @@ package com.nj.search.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+@Component
 class ArrayListAggregationStrategy implements AggregationStrategy {
 
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
@@ -17,7 +19,7 @@ class ArrayListAggregationStrategy implements AggregationStrategy {
             return newExchange;
         } else {
             list = oldExchange.getIn().getBody(ArrayList.class);
-            //list.add(newBody);
+            list.add(newBody);
             return oldExchange;
         }
     }

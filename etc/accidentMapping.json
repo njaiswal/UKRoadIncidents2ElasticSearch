@@ -1,0 +1,295 @@
+{
+    "accident" : {
+        "properties" : {
+            "accidentLocation" : {
+                "type" : "geo_point"
+            },
+            "accident_Index" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "accident_Severity" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "carriageway_Hazards" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "casualtyList" : {
+                "type" : "nested",
+                "include_in_parent" : true,
+                "properties" : {
+                    "acc_Index" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "age_Band_of_Casualty" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "bus_or_Coach_Passenger" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "car_Passenger" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "casualty_Class" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "casualty_Home_Area_Type" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "casualty_Reference" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "casualty_Severity" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "casualty_Type" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "pedestrian_Location" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "pedestrian_Movement" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "pedestrian_Road_Maintenance_Worker" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "sex_of_Casualty" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Reference" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    }
+                }
+            },
+            "date" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "dateTime" : {
+                "type" : "date",
+                "format" : "dd/MM/yyyy HH:mm"
+            },
+            "day_of_Week" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "did_Police_Officer_Attend_Scene_of_Accident" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "first_Road_Class" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "first_Road_Number" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "junction_Control" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "junction_Detail" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "latitude" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "light_Conditions" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "local_Authority_District" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "local_Authority_Highway" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "location_Easting_OSGR" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "location_Northing_OSGR" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "longitude" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "number_of_Casualties" : {
+                "type" : "long"
+            },
+            "number_of_Vehicles" : {
+                "type" : "long"
+            },
+            "pedestrian_Crossing_Human_Control" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "pedestrian_Crossing_Physical_Facilities" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "police_Force" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "road_Surface_Conditions" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "road_Type" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "second_Road_Class" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "second_Road_Number" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "special_Conditions_at_Site" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "speed_limit" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "time" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "urban_or_Rural_Area" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "vehicleList" : {
+                "type" : "nested",
+                "include_in_parent" : true,
+                "properties" : {
+                    "acc_Index" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "age_Band_of_Driver" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "age_of_Vehicle" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "driver_Home_Area_Type" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "driver_IMD_Decile" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "engine_Capacity" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "first_Point_of_Impact" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "hit_Object_in_Carriageway" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "hit_Object_off_Carriageway" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "journey_Purpose_of_Driver" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "junction_Location" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "make" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "model" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "propulsion_Code" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "sex_of_Driver" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "skidding_and_Overturning" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "towing_and_Articulation" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Leaving_Carriageway" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Location_Restricted_Lane" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Manoeuvre" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Reference" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "vehicle_Type" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    },
+                    "was_Vehicle_Left_Hand_Drive" : {
+                        "type" : "string",
+                        "index" : "not_analyzed"
+                    }
+                }
+            },
+            "weather_Conditions" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            }
+        }
+    }
+}
